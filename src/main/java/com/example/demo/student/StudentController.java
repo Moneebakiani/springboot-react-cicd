@@ -24,6 +24,12 @@ public class StudentController {
                 studentService.getAllStudents(PageRequest.of(0, 100)),
                 HttpStatus.OK);
     }
+    @GetMapping("/id")
+    public ResponseEntity<?> getStudentById(@PathVariable Long id) {
+        return new ResponseEntity<>(
+                studentService.findById(id),
+                HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<?> addStudent(@Valid @RequestBody StudentDTO studentDTO) {
