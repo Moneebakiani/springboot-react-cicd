@@ -3,12 +3,11 @@ package com.example.demo.student;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -17,14 +16,10 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
-    public List<StudentDTO> getAllStudents(Pageable pageable) {
-        List<Student> students = studentRepository.findAll();
-        return students.stream()
-                .map(DTOAdapter::StudentDTOFromStudent)
-                .collect(Collectors.toList());
-//        return studentRepository.findAll(pageable)
-//                .map(DTOAdapter::StudentDTOFromStudent);
-        //.map(student -> DTOAdapter.StudentDTOFromStudent(student));
+    public Page<StudentDTO> getAllStudents(Pageable pageable) {
+        Page<Student> studentPage = studentRepository.findAll(pageable);
+        return studentPage
+                .map(DTOAdapter::StudentDTOFromStudent);
     }
 
     public StudentDTO addStudent(StudentDTO studentDTO) {

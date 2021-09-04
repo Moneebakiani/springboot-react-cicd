@@ -9,7 +9,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -39,11 +43,19 @@ class StudentServiceTest {
 
     @Test
     void getAllStudents() {
-        //when
-        underTest.getAllStudents(PageRequest.of(0, 100));
-        //then
-        verify(studentRepository).findAll();
+        // given
+        PageRequest pageable = PageRequest.of(0, 100);
+        given(studentRepository.findAll(pageable)).willReturn(new PageImpl<>(new ArrayList<>()));
 
+        //when
+        underTest.getAllStudents(pageable);
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        //then
+        verify(studentRepository).findAll(pageableArgumentCaptor.capture());
+
+        Pageable capturedPageable = pageableArgumentCaptor.getValue();
+
+        assertThat(capturedPageable).isEqualTo(pageable);
 
     }
 
